@@ -1,3 +1,5 @@
 .vscode
 Listings
 Objects
+*.uvgui.*
+*.uvopt
