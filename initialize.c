@@ -10,6 +10,7 @@
 void init()
 {
     initTimer();
+    Display_init(&display);
     PasswordInput_init(&passwordInput);
     Keyboard_init(&keyboard);
     MaxPersonInput_init(&maxPersonInput);

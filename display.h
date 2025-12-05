@@ -43,17 +43,23 @@ enum DisplatCharacter
     DC_U = DS_TopRight & DS_BottomRight & DS_Bottom & DS_BottomLeft & DS_TopLeft
 };
 
-extern uint8_t displayBuffer[8];
-extern uint8_t promptCount;
-extern uint8_t currentPromptValue;
-extern int8_t disappearCounter[8];
+typedef struct
+{
+    uint8_t displayBuffer[8];
+    uint8_t promptCount;
+    uint8_t currentPromptValue;
+    int8_t disappearCounter[8];
+} Display;
+
+extern xdata Display display;
 
 void shortDelay(uint8_t time);
-void displayCharacter(uint8_t item, uint8_t index);
-void displayString(uint8_t* str);
-void refreshDisplay();
-void promptInput(uint8_t index);
-void delayDisappear(uint8_t index, int8_t time);
-void resetDelayDisappear();
+void Display_init(Display* self);
+void Display_displayCharacter(Display* self, uint8_t item, uint8_t index);
+void Display_displayString(Display* self, uint8_t* str);
+void Display_refreshDisplay(Display* self);
+void Display_promptInput(Display* self, uint8_t index);
+void Display_delayDisappear(Display* self, uint8_t index, int8_t time);
+void Display_resetDelayDisappear(Display* self);
 
 #endif // __DISPLAY_H__

@@ -2,19 +2,7 @@
 #include "utils.h"
 #include <reg51.h>
 
-uint8_t displayBuffer[8] = {
-    DS_Disabled,
-    DS_Disabled,
-    DS_Disabled,
-    DS_Disabled,
-    DS_Disabled,
-    DS_Disabled,
-    DS_Disabled,
-    DS_Disabled
-};
-uint8_t promptCount = 0;
-uint8_t currentPromptValue = DS_Bottom;
-int8_t disappearCounter[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
+xdata Display display;
 
 void shortDelay(uint8_t time)
 {
@@ -22,7 +10,19 @@ void shortDelay(uint8_t time)
         ;
 }
 
-void displayCharacter(uint8_t item, uint8_t index)
+void Display_init(Display* self)
+{
+    uint8_t i = 0;
+    self->currentPromptValue = DS_Bottom;
+    for (; i < 8; i++)
+    {
+        self->displayBuffer[i] = DS_Disabled;
+        self->disappearCounter[i] = -1;
+    }
+    self->promptCount = 0;
+}
+
+void Display_displayCharacter(Display* self, uint8_t item, uint8_t index)
 {
     P2 = 0;
     P0 = DS_Disabled;
@@ -32,49 +32,52 @@ void displayCharacter(uint8_t item, uint8_t index)
     shortDelay(100);
 }
 
-void displayString(uint8_t* str)
+void Display_displayString(Display* self, uint8_t* str)
 {
     int i = 0;
     int currentDigit = 0x01;
     for (i = 0; i < 8; i++)
     {
-        displayCharacter(str[i], currentDigit);
+        Display_displayCharacter(self, str[i], currentDigit);
         currentDigit <<= 1;
     }
 }
 
-void refreshDisplay()
+void Display_refreshDisplay(Display* self)
 {
     uint8_t i = 0;
     for (; i < 8; i++)
     {
-        if (disappearCounter[i] == 0)
-            displayBuffer[i] = DS_Middle;
-        if (disappearCounter[i] >= 0)
-            disappearCounter[i]--;
+        if (self->disappearCounter[i] == 0)
+            self->displayBuffer[i] = DS_Middle;
+        if (self->disappearCounter[i] >= 0)
+            self->disappearCounter[i]--;
     }
-    displayString(displayBuffer);
+    Display_displayString(self, self->displayBuffer);
 }
 
-void promptInput(uint8_t index)
+void Display_promptInput(Display* self, uint8_t index)
 {
-    displayBuffer[index] = currentPromptValue;
-    promptCount++;
-    if (promptCount == 20)
+    self->displayBuffer[index] = self->currentPromptValue;
+    self->promptCount++;
+    if (self->promptCount == 20)
     {
-        promptCount = 0;
-        if (currentPromptValue == DS_Bottom)
-            currentPromptValue = DS_Disabled;
+        self->promptCount = 0;
+        if (self->currentPromptValue == DS_Bottom)
+            self->currentPromptValue = DS_Disabled;
         else
-            currentPromptValue = DS_Bottom;
+            self->currentPromptValue = DS_Bottom;
     }
 }
 
-void delayDisappear(uint8_t index, int8_t time) { disappearCounter[index] = time; }
+void Display_delayDisappear(Display* self, uint8_t index, int8_t time)
+{
+    self->disappearCounter[index] = time;
+}
 
-void resetDelayDisappear()
+void Display_resetDelayDisappear(Display* self)
 {
     uint8_t i = 0;
     for (; i < 8; i++)
-        disappearCounter[i] = -1;
+        self->disappearCounter[i] = -1;
 }

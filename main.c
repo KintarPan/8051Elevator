@@ -82,13 +82,13 @@ void onTimer0Timeout() INTERRUPT(1)
     case WS_Free:
         break;
     }
-    refreshDisplay();
+    Display_refreshDisplay(&display);
     EA = 1;
 }
 
 void getPassword()
 {
-    promptInput(passwordInput.currentIndex);
+    Display_promptInput(&display, passwordInput.currentIndex);
     Keyboard_getKey(&keyboard);
     if (keyboard.state != Released)
         return;
@@ -99,7 +99,7 @@ void getPassword()
     }
     if (keyboard.releasedKey == SK_Backspace)
     {
-        displayBuffer[passwordInput.currentIndex] = DS_Disabled;
+        display.displayBuffer[passwordInput.currentIndex] = DS_Disabled;
         PasswordInput_backspace(&passwordInput);
         return;
     }
@@ -107,15 +107,15 @@ void getPassword()
         return;
     if (keyboard.releasedKey >= 10)
         return;
-    displayBuffer[passwordInput.currentIndex] = castTable[keyboard.releasedKey];
-    delayDisappear(passwordInput.currentIndex, 50);
+    display.displayBuffer[passwordInput.currentIndex] = castTable[keyboard.releasedKey];
+    Display_delayDisappear(&display, passwordInput.currentIndex, 50);
     PasswordInput_append(&passwordInput, keyboard.releasedKey);
 }
 
 void getMaxPerson()
 {
     uint8_t i = 0;
-    promptInput(2 + maxPersonInput.currentIndex);
+    Display_promptInput(&display, 2 + maxPersonInput.currentIndex);
     Keyboard_getKey(&keyboard);
     if (keyboard.state != Released)
         return;
@@ -123,12 +123,12 @@ void getMaxPerson()
     {
         workState = WS_Weight;
         for (; i < 8; i++)
-            displayBuffer[i] = weightPrompt[i];
+            display.displayBuffer[i] = weightPrompt[i];
         return;
     }
     if (keyboard.releasedKey == SK_Backspace)
     {
-        displayBuffer[2 + maxPersonInput.currentIndex] = DS_Disabled;
+        display.displayBuffer[2 + maxPersonInput.currentIndex] = DS_Disabled;
         MaxPersonInput_backspace(&maxPersonInput);
         return;
     }
@@ -136,14 +136,14 @@ void getMaxPerson()
         return;
     if (keyboard.releasedKey >= 10)
         return;
-    displayBuffer[2 + maxPersonInput.currentIndex] = castTable[keyboard.releasedKey];
+    display.displayBuffer[2 + maxPersonInput.currentIndex] = castTable[keyboard.releasedKey];
     MaxPersonInput_append(&maxPersonInput, keyboard.releasedKey);
 }
 
 void getMaxWeight()
 {
     uint8_t i = 0;
-    promptInput(2 + maxWeightInput.currentIndex);
+    Display_promptInput(&display, 2 + maxWeightInput.currentIndex);
     Keyboard_getKey(&keyboard);
     if (keyboard.state != Released)
         return;
@@ -151,12 +151,12 @@ void getMaxWeight()
     {
         workState = WS_Finish;
         for (; i < 8; i++)
-            displayBuffer[i] = finishPrompt[i];
+            display.displayBuffer[i] = finishPrompt[i];
         return;
     }
     if (keyboard.releasedKey == SK_Backspace)
     {
-        displayBuffer[2 + maxWeightInput.currentIndex] = DS_Disabled;
+        display.displayBuffer[2 + maxWeightInput.currentIndex] = DS_Disabled;
         MaxWeightInput_backspace(&maxWeightInput);
         return;
     }
@@ -164,7 +164,7 @@ void getMaxWeight()
         return;
     if (keyboard.releasedKey >= 10)
         return;
-    displayBuffer[2 + maxWeightInput.currentIndex] = castTable[keyboard.releasedKey];
+    display.displayBuffer[2 + maxWeightInput.currentIndex] = castTable[keyboard.releasedKey];
     MaxWeightInput_append(&maxWeightInput, keyboard.releasedKey);
 }
 
@@ -193,9 +193,9 @@ void varifyPassword()
         workState = WS_Person;
         targetPrompt = personPrompt;
     }
-    resetDelayDisappear();
+    Display_resetDelayDisappear(&display);
     for (i = 0; i < 8; i++)
-        displayBuffer[i] = targetPrompt[i];
+        display.displayBuffer[i] = targetPrompt[i];
 }
 
 void wrongPasswordDelay()
@@ -206,7 +206,7 @@ void wrongPasswordDelay()
     if (wrongPasswordDelayTime == 0)
     {
         for (; i < 8; i++)
-            displayBuffer[i] = DS_Disabled;
+            display.displayBuffer[i] = DS_Disabled;
         PasswordInput_clear(&passwordInput);
         workState = WS_GetPassword;
         return;
@@ -220,7 +220,7 @@ void finishDelay()
     if (finishDelayTime == 0)
     {
         for (; i < 8; i++)
-            displayBuffer[i] = DS_Disabled;
+            display.displayBuffer[i] = DS_Disabled;
         workState = WS_Free;
     }
     finishDelayTime--;
