@@ -47,8 +47,8 @@ int main()
 void onTimer0Timeout() INTERRUPT(1)
 {
     EA = 0;
-    TH0 = (0xFFFF - 10000) / 0x0100; // 10 ms in 12MHz
-    TL0 = (0xFFFF - 10000) % 0x0100;
+    TH0 = (-10000) / 0x0100; // 10 ms in 12MHz
+    TL0 = (-10000) % 0x0100;
     switch (workState)
     {
     case WS_GetPassword:
@@ -136,6 +136,6 @@ void varifyPassword()
         targetPrompt = personPrompt;
     }
     resetDelayDisappear();
-    for (i= 0; i < 8; i++)
+    for (i = 0; i < 8; i++)
         displayBuffer[i] = targetPrompt[i];
 }
