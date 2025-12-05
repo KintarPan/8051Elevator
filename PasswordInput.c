@@ -10,7 +10,8 @@ void PasswordInput_init(PasswordInput* self)
         self->passwordInput[i] = 0xFF;
 }
 
-void PasswordInput_setCurrentDigit(PasswordInput* self, uint8_t n)
+void PasswordInput_append(PasswordInput* self, uint8_t key)
 {
-    self->passwordInput[self->currentIndex] = n;
+    self->passwordInput[self->currentIndex] = key;
+    self->currentIndex++;
 }

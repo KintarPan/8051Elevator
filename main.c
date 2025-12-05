@@ -76,15 +76,15 @@ void getPassword()
 {
     promptInput(passwordInput.currentIndex);
     Keyboard_getKey(&keyboard);
-    if (keyboard.state == Released)
-    {
-        PasswordInput_setCurrentDigit(&passwordInput, keyboard.releasedKey);
-        displayBuffer[passwordInput.currentIndex] = castTable[keyboard.releasedKey];
-        delayDisappear(passwordInput.currentIndex, 50);
-        if (keyboard.releasedKey != truePassword[passwordInput.currentIndex])
-            passwordIsRight = 0;
-        passwordInput.currentIndex++;
-    }
+    if (keyboard.state != Released)
+        return;
+    if (keyboard.releasedKey >= 10)
+        return;
+    displayBuffer[passwordInput.currentIndex] = castTable[keyboard.releasedKey];
+    delayDisappear(passwordInput.currentIndex, 50);
+    if (keyboard.releasedKey != truePassword[passwordInput.currentIndex])
+        passwordIsRight = 0;
+    PasswordInput_append(&passwordInput, keyboard.releasedKey);
 }
 
 void getMaxPerson()

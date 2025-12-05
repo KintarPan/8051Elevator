@@ -12,6 +12,6 @@ typedef struct
 extern PasswordInput passwordInput;
 
 void PasswordInput_init(PasswordInput* self);
-void PasswordInput_setCurrentDigit(PasswordInput* self, uint8_t n);
+void PasswordInput_append(PasswordInput* self, uint8_t key);
 
 #endif // __PASSWORD_INPUT_H__
