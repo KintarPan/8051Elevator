@@ -15,3 +15,11 @@ void PasswordInput_append(PasswordInput* self, uint8_t key)
     self->passwordInput[self->currentIndex] = key;
     self->currentIndex++;
 }
+
+void PasswordInput_backspace(PasswordInput* self)
+{
+    if (self->currentIndex == 0)
+        return;
+    self->currentIndex--;
+    self->passwordInput[self->currentIndex] = 0xFF;
+}
