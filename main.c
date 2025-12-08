@@ -1,6 +1,4 @@
-#include "MaxPersonInput.h"
-#include "MaxWeightInput.h"
-#include "PasswordInput.h"
+#include "NumberInput.h"
 #include "display.h"
 #include "initialize.h"
 #include "keyboard.h"
@@ -18,26 +16,11 @@ enum WorkState
     WS_GetPassword,
     WS_VarifyPassword,
     WS_PasswordWrong,
-    WS_Person,
-    WS_Weight,
+    WS_GetMaxPerson,
+    WS_GetMaxWeight,
     WS_Finish,
     WS_Free
 };
-uint8_t workState = WS_GetPassword;
-uint8_t castTable[] = {
-    DC_0, DC_1, DC_2, DC_3, DC_4, DC_5, DC_6, DC_7, DC_8, DC_9, DC_A, DC_B, DC_C, DC_D, DC_E, DC_F
-};
-uint8_t truePassword[] = {1, 1, 4, 5, 1, 4};
-uint8_t personPrompt[] = {
-    DC_N, DC_O& DS_Dot, DS_Disabled, DS_Disabled, DS_Disabled, DS_Disabled, DS_Disabled, DS_Disabled
-};
-uint8_t errorPrompt[] = {DC_E, DC_R, DC_R, DC_O, DC_R, DS_Disabled, DS_Disabled, DS_Disabled};
-uint8_t weightPrompt[] = {
-    DC_R, DC_L& DS_Dot, DS_Disabled, DS_Disabled, DS_Disabled, DS_Disabled, DS_Disabled, DS_Disabled
-};
-uint8_t wrongPasswordDelayTime = 100;
-uint8_t finishDelayTime = 100;
-uint8_t finishPrompt[] = {DC_F, DC_1, DC_N, DC_1, DC_5, DC_H, DS_Disabled, DS_Disabled};
 
 void getPassword();
 void getMaxPerson();
@@ -45,6 +28,21 @@ void getMaxWeight();
 void varifyPassword();
 void wrongPasswordDelay();
 void finishDelay();
+
+const uint8_t castTable[] = {
+    DC_0, DC_1, DC_2, DC_3, DC_4, DC_5, DC_6, DC_7, DC_8, DC_9, DC_A, DC_B, DC_C, DC_D, DC_E, DC_F
+};
+const uint8_t truePassword[] = {1, 1, 4, 5, 1, 4};
+const uint8_t personPrompt[] = {DC_N, DC_O& DS_Dot};
+const uint8_t weightPrompt[] = {DC_R, DC_L& DS_Dot};
+const uint8_t finishPrompt[] = {DC_F, DC_1, DC_N, DC_1, DC_5, DC_H};
+uint8_t errorPrompt[] = {DC_E, DC_R, DC_R, DC_O, DC_R, DS_Disabled, DS_Disabled, DS_Disabled};
+uint8_t wrongPasswordDelayTime;
+uint8_t finishDelayTime;
+uint8_t maxPerson;
+uint8_t maxWeight;
+uint8_t passwordTrialCount;
+uint8_t workState;
 
 int main()
 {
@@ -70,10 +68,10 @@ void onTimer0Timeout() INTERRUPT(1)
     case WS_PasswordWrong:
         wrongPasswordDelay();
         break;
-    case WS_Person:
+    case WS_GetMaxPerson:
         getMaxPerson();
         break;
-    case WS_Weight:
+    case WS_GetMaxWeight:
         getMaxWeight();
         break;
     case WS_Finish:
@@ -82,13 +80,13 @@ void onTimer0Timeout() INTERRUPT(1)
     case WS_Free:
         break;
     }
-    refreshDisplay();
+    Display_refreshDisplay(&display);
     EA = 1;
 }
 
 void getPassword()
 {
-    promptInput(passwordInput.currentIndex);
+    Display_promptInput(&display, numberInput.currentIndex);
     Keyboard_getKey(&keyboard);
     if (keyboard.state != Released)
         return;
@@ -99,115 +97,118 @@ void getPassword()
     }
     if (keyboard.releasedKey == SK_Backspace)
     {
-        displayBuffer[passwordInput.currentIndex] = DS_Disabled;
-        PasswordInput_backspace(&passwordInput);
+        display.displayBuffer[numberInput.currentIndex] = DS_Disabled;
+        NumberInput_backspace(&numberInput);
         return;
     }
-    if (passwordInput.currentIndex == 6)
+    if (numberInput.currentIndex == 6)
         return;
     if (keyboard.releasedKey >= 10)
         return;
-    displayBuffer[passwordInput.currentIndex] = castTable[keyboard.releasedKey];
-    delayDisappear(passwordInput.currentIndex, 50);
-    PasswordInput_append(&passwordInput, keyboard.releasedKey);
+    display.displayBuffer[numberInput.currentIndex] = castTable[keyboard.releasedKey];
+    Display_delayDisappear(&display, numberInput.currentIndex, 50);
+    NumberInput_append(&numberInput, keyboard.releasedKey);
 }
 
 void getMaxPerson()
 {
     uint8_t i = 0;
-    promptInput(2 + maxPersonInput.currentIndex);
+    Display_promptInput(&display, 2 + numberInput.currentIndex);
     Keyboard_getKey(&keyboard);
     if (keyboard.state != Released)
         return;
     if (keyboard.releasedKey == SK_Enter)
     {
-        workState = WS_Weight;
-        for (; i < 8; i++)
-            displayBuffer[i] = weightPrompt[i];
+        maxPerson = NumberInput_getNumber(&numberInput);
+        NumberInput_clear(&numberInput);
+        workState = WS_GetMaxWeight;
+        Display_setPrompt(&display, weightPrompt, 2);
         return;
     }
     if (keyboard.releasedKey == SK_Backspace)
     {
-        displayBuffer[2 + maxPersonInput.currentIndex] = DS_Disabled;
-        MaxPersonInput_backspace(&maxPersonInput);
+        display.displayBuffer[2 + numberInput.currentIndex] = DS_Disabled;
+        NumberInput_backspace(&numberInput);
         return;
     }
-    if (maxPersonInput.currentIndex == 3)
+    if (numberInput.currentIndex == 3)
         return;
     if (keyboard.releasedKey >= 10)
         return;
-    displayBuffer[2 + maxPersonInput.currentIndex] = castTable[keyboard.releasedKey];
-    MaxPersonInput_append(&maxPersonInput, keyboard.releasedKey);
+    display.displayBuffer[2 + numberInput.currentIndex] = castTable[keyboard.releasedKey];
+    NumberInput_append(&numberInput, keyboard.releasedKey);
 }
 
 void getMaxWeight()
 {
     uint8_t i = 0;
-    promptInput(2 + maxWeightInput.currentIndex);
+    Display_promptInput(&display, 2 + numberInput.currentIndex);
     Keyboard_getKey(&keyboard);
     if (keyboard.state != Released)
         return;
     if (keyboard.releasedKey == SK_Enter)
     {
+        maxWeight = NumberInput_getNumber(&numberInput);
+        NumberInput_clear(&numberInput);
         workState = WS_Finish;
-        for (; i < 8; i++)
-            displayBuffer[i] = finishPrompt[i];
+        Display_setPrompt(&display, finishPrompt, 6);
         return;
     }
     if (keyboard.releasedKey == SK_Backspace)
     {
-        displayBuffer[2 + maxWeightInput.currentIndex] = DS_Disabled;
-        MaxWeightInput_backspace(&maxWeightInput);
+        display.displayBuffer[2 + numberInput.currentIndex] = DS_Disabled;
+        NumberInput_backspace(&numberInput);
         return;
     }
-    if (maxWeightInput.currentIndex == 3)
+    if (numberInput.currentIndex == 3)
         return;
     if (keyboard.releasedKey >= 10)
         return;
-    displayBuffer[2 + maxWeightInput.currentIndex] = castTable[keyboard.releasedKey];
-    MaxWeightInput_append(&maxWeightInput, keyboard.releasedKey);
+    display.displayBuffer[2 + numberInput.currentIndex] = castTable[keyboard.releasedKey];
+    NumberInput_append(&numberInput, keyboard.releasedKey);
 }
 
 void varifyPassword()
 {
     uint8_t i = 0;
     bit passwordIsCorrect = 1;
-    uint8_t* targetPrompt;
-    passwordInput.trialLeft--;
-    errorPrompt[7] = castTable[passwordInput.trialLeft];
-    for (; i < 6; i++)
+    passwordTrialCount--;
+    errorPrompt[7] = castTable[passwordTrialCount];
+    if (numberInput.currentIndex != 6)
+        passwordIsCorrect = 0;
+    else
     {
-        if (passwordInput.passwordInput[i] != truePassword[i])
+        for (; i != 6; i++)
         {
-            passwordIsCorrect = 0;
-            break;
+            if (numberInput.inputBuffer[i] != truePassword[i])
+            {
+                passwordIsCorrect = 0;
+                break;
+            }
         }
     }
     if (!passwordIsCorrect)
     {
-        targetPrompt = errorPrompt;
+        Display_setPrompt(&display, errorPrompt, 8);
         wrongPasswordDelayTime = 100;
         workState = WS_PasswordWrong;
     } else
     {
-        workState = WS_Person;
-        targetPrompt = personPrompt;
+        Display_setPrompt(&display, personPrompt, 2);
+        NumberInput_clear(&numberInput);
+        workState = WS_GetMaxPerson;
     }
-    resetDelayDisappear();
-    for (i = 0; i < 8; i++)
-        displayBuffer[i] = targetPrompt[i];
+    Display_resetDelayDisappear(&display);
 }
 
 void wrongPasswordDelay()
 {
-    uint8_t i = 0;
-    if (passwordInput.trialLeft == 0)
+    if (passwordTrialCount == 0)
         return;
     if (wrongPasswordDelayTime == 0)
     {
-        for (; i < 8; i++)
-            displayBuffer[i] = DS_Disabled;
-        PasswordInput_clear(&passwordInput);
+        Display_clear(&display);
+        NumberInput_clear(&numberInput);
         workState = WS_GetPassword;
         return;
     }
@@ -219,8 +220,8 @@ void finishDelay()
     uint8_t i = 0;
     if (finishDelayTime == 0)
     {
-        for (; i < 8; i++)
-            displayBuffer[i] = DS_Disabled;
+        for (; i != 8; i++)
+            display.displayBuffer[i] = DS_Disabled;
         workState = WS_Free;
     }
     finishDelayTime--;

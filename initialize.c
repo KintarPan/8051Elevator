@@ -1,8 +1,6 @@
 #include "initialize.h"
 #include "Keyboard.h"
-#include "MaxPersonInput.h"
-#include "MaxWeightInput.h"
-#include "PasswordInput.h"
+#include "NumberInput.h"
 #include "display.h"
 #include "utils.h"
 #include <reg51.h>
@@ -10,10 +8,9 @@
 void init()
 {
     initTimer();
-    PasswordInput_init(&passwordInput);
+    Display_init(&display);
     Keyboard_init(&keyboard);
-    MaxPersonInput_init(&maxPersonInput);
-    MaxWeightInput_init(&maxWeightInput);
+    NumberInput_init(&numberInput);
 }
 
 void initTimer()

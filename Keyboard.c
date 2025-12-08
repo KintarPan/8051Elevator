@@ -4,14 +4,6 @@
 
 Keyboard keyboard;
 
-void Keyboard_init(Keyboard* self)
-{
-    self->state = Free;
-    self->pressedKey = 0xFF;
-    self->releasedKey = 0xFF;
-    self->prevKey = 0xFF;
-}
-
 void Keyboard_getKey(Keyboard* self)
 {
     uint8_t currentKey = 0xFF;
@@ -20,14 +12,14 @@ void Keyboard_getKey(Keyboard* self)
     uint8_t row = 0;
     uint8_t col = 0;
 
-    for (; row < 4; row++)
+    for (; row != 4; row++)
     {
         P1 = ~rowMask;
         if (P1 != ~rowMask)
             break;
         rowMask <<= 1;
     }
-    for (; col < 4; col++)
+    for (; col != 4; col++)
     {
         P1 = ~colMask;
         if (P1 != ~colMask)

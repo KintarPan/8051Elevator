@@ -27,5 +27,5 @@ typedef struct
 
 extern Keyboard keyboard;
 
-void Keyboard_init(Keyboard* self);
+#define Keyboard_init(self) (self)->state = Free;
 void Keyboard_getKey(Keyboard* self);
