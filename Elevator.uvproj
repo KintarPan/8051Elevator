@@ -397,24 +397,14 @@
               <FilePath>.\keyboard.c</FilePath>
             </File>
             <File>
-              <FileName>PasswordInput.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\PasswordInput.c</FilePath>
-            </File>
-            <File>
               <FileName>Led.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Led.c</FilePath>
             </File>
             <File>
-              <FileName>MaxPersonInput.c</FileName>
+              <FileName>NumberInput.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\MaxPersonInput.c</FilePath>
-            </File>
-            <File>
-              <FileName>MaxWeightInput.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\MaxWeightInput.c</FilePath>
+              <FilePath>.\NumberInput.c</FilePath>
             </File>
           </Files>
         </Group>

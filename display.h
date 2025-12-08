@@ -16,7 +16,7 @@ enum DisplaySegement
     DS_Disabled = 0xFF
 };
 
-enum DisplatCharacter
+enum DisplayCharacter
 {
     DC_0 = DS_Top & DS_TopRight & DS_BottomRight & DS_Bottom & DS_BottomLeft & DS_TopLeft,
     DC_1 = DS_TopRight & DS_BottomRight,
@@ -51,15 +51,15 @@ typedef struct
     int8_t disappearCounter[8];
 } Display;
 
-extern xdata Display display;
+extern Display display;
 
-void shortDelay(uint8_t time);
 void Display_init(Display* self);
-void Display_displayCharacter(Display* self, uint8_t item, uint8_t index);
-void Display_displayString(Display* self, uint8_t* str);
+void Display_displayCharacter(uint8_t item, uint8_t index);
 void Display_refreshDisplay(Display* self);
 void Display_promptInput(Display* self, uint8_t index);
-void Display_delayDisappear(Display* self, uint8_t index, int8_t time);
+#define Display_delayDisappear(self, index, time) (self)->disappearCounter[index] = time;
 void Display_resetDelayDisappear(Display* self);
+void Display_clear(Display* self);
+void Display_setPrompt(Display* self, uint8_t* prompt, uint8_t size);
 
 #endif // __DISPLAY_H__
