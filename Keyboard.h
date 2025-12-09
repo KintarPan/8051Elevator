@@ -2,11 +2,11 @@
 
 enum KeyboardState
 {
-    Free,
-    PrePress,
-    Pressed,
-    PreRelease,
-    Released
+    KS_Free,
+    KS_PrePress,
+    KS_Pressed,
+    KS_PreRelease,
+    KS_Released
 };
 
 enum SpecialKey
@@ -27,5 +27,5 @@ typedef struct
 
 extern Keyboard keyboard;
 
-#define Keyboard_init(self) (self)->state = Free;
-void Keyboard_getKey(Keyboard* self);
+#define Keyboard_init() keyboard.state = KS_Free;
+void Keyboard_getKey();

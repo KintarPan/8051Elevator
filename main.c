@@ -136,7 +136,7 @@ void varifyPassword()
     } else
     {
         Display_setPrompt(personPrompt, 2);
-        NumberInput_clear(&numberInput);
+        NumberInput_clear();
         workState = WS_GetMaxPerson;
     }
     Display_resetDelayDisappear();
@@ -149,7 +149,7 @@ void wrongPasswordDelay()
     if (wrongPasswordDelayTime == 0)
     {
         Display_clear();
-        NumberInput_clear(&numberInput);
+        NumberInput_clear();
         workState = WS_GetPassword;
         return;
     }
@@ -177,14 +177,14 @@ void getContent(
 )
 {
     Display_promptInput(promptLength + numberInput.currentIndex);
-    Keyboard_getKey(&keyboard);
-    if (keyboard.state != Released)
+    Keyboard_getKey();
+    if (keyboard.state != KS_Released)
         return;
     if (keyboard.releasedKey == SK_Enter)
     {
-        numberInput.result = NumberInput_getNumber(&numberInput);
+        numberInput.result = NumberInput_getNumber();
         if (!isPassword)
-            NumberInput_clear(&numberInput);
+            NumberInput_clear();
         workState = nextState;
         Display_setPrompt(nextPrompt, nextPromptSize);
         return;
@@ -192,7 +192,7 @@ void getContent(
     if (keyboard.releasedKey == SK_Backspace)
     {
         display.displayBuffer[promptLength + numberInput.currentIndex] = DS_Disabled;
-        NumberInput_backspace(&numberInput);
+        NumberInput_backspace();
         return;
     }
     if (numberInput.currentIndex == contentLength)
@@ -203,5 +203,5 @@ void getContent(
         castTable[keyboard.releasedKey];
     if (isPassword)
         Display_delayDisappear(promptLength + numberInput.currentIndex, 50);
-    NumberInput_append(&numberInput, keyboard.releasedKey);
+    NumberInput_append(keyboard.releasedKey);
 }

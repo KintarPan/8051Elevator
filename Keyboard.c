@@ -4,7 +4,7 @@
 
 Keyboard keyboard;
 
-void Keyboard_getKey(Keyboard* self)
+void Keyboard_getKey()
 {
     uint8_t currentKey = 0xFF;
     uint8_t rowMask = 0x01;
@@ -29,62 +29,62 @@ void Keyboard_getKey(Keyboard* self)
     if (row != 4 && col != 4)
         currentKey = row * 4 + col;
 
-    switch (self->state)
+    switch (keyboard.state)
     {
-    case Free:
+    case KS_Free:
         if (currentKey != (uint8_t)0xFF)
         {
-            self->state = PrePress;
-            self->pressedKey = currentKey;
+            keyboard.state = KS_PrePress;
+            keyboard.pressedKey = currentKey;
         }
         break;
-    case PrePress:
+    case KS_PrePress:
         if (currentKey == (uint8_t)0xFF)
         {
-            self->state = Free;
+            keyboard.state = KS_Free;
             break;
         }
-        if (currentKey == self->prevKey)
+        if (currentKey == keyboard.prevKey)
         {
-            self->pressedKey = currentKey;
-            self->state = Pressed;
-            break;
-        }
-        break;
-    case Pressed:
-        if (currentKey == (uint8_t)0xFF)
-        {
-            self->state = PreRelease;
-            self->releasedKey = self->pressedKey;
-            break;
-        }
-        if (currentKey != self->pressedKey)
-        {
-            self->state = PrePress;
+            keyboard.pressedKey = currentKey;
+            keyboard.state = KS_Pressed;
             break;
         }
         break;
-    case PreRelease:
+    case KS_Pressed:
         if (currentKey == (uint8_t)0xFF)
         {
-            self->state = Released;
+            keyboard.state = KS_PreRelease;
+            keyboard.releasedKey = keyboard.pressedKey;
             break;
         }
-        if (currentKey == self->prevKey)
+        if (currentKey != keyboard.pressedKey)
         {
-            self->pressedKey = currentKey;
-            self->state = Pressed;
+            keyboard.state = KS_PrePress;
             break;
         }
         break;
-    case Released:
+    case KS_PreRelease:
         if (currentKey == (uint8_t)0xFF)
         {
-            self->state = Free;
+            keyboard.state = KS_Released;
             break;
         }
-        self->state = PreRelease;
+        if (currentKey == keyboard.prevKey)
+        {
+            keyboard.pressedKey = currentKey;
+            keyboard.state = KS_Pressed;
+            break;
+        }
+        break;
+    case KS_Released:
+        if (currentKey == (uint8_t)0xFF)
+        {
+            keyboard.state = KS_Free;
+            break;
+        }
+        keyboard.state = KS_PreRelease;
         break;
     }
-    self->prevKey = currentKey;
+    keyboard.prevKey = currentKey;
 }
