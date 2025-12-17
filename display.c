@@ -17,7 +17,7 @@ void Display_displayCharacter(uint8_t item, uint8_t index)
     P2 = ~index;
     P0 = item;
     shortDelay(delayTime);
-	  P2 = 0xFF;
+    P2 = 0xFF;
 }
 
 void Display_refreshDisplay()
