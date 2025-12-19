@@ -397,14 +397,29 @@
               <FilePath>.\keyboard.c</FilePath>
             </File>
             <File>
-              <FileName>Led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Led.c</FilePath>
-            </File>
-            <File>
               <FileName>NumberInput.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\NumberInput.c</FilePath>
+            </File>
+            <File>
+              <FileName>Joystick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Joystick.c</FilePath>
+            </File>
+            <File>
+              <FileName>ElevatorControl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ElevatorControl.c</FilePath>
+            </File>
+            <File>
+              <FileName>LcdDisplay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\LcdDisplay.c</FilePath>
+            </File>
+            <File>
+              <FileName>utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\utils.c</FilePath>
             </File>
           </Files>
         </Group>
